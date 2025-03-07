@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password</title>
+    
+<style>
+/* Reset Password Page Styles */
+body {
+    font-family: 'League Spartan', sans-serif;
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    backdrop-filter: blur(10px);
+}
+
+h2 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+p {
+    color: white;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    color: white;
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+}
+
+.input-group input {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background: gold;
+    color: black;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: white;
+    color: #0072ff;
+}
+
+.message {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <form id="resetForm" class="form">
+            <h2>Reset Password</h2>
+            <p>Enter your email to receive a reset token</p>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <button type="submit">Send Reset Token</button>
+            <p id="message" class="message"></p>
+        </form>
+
+        <form id="newPasswordForm" class="form hidden">
+            <h2>Enter New Password</h2>
+            <p>Check your email for the reset token</p>
+            <div class="input-group">
+                <label for="token">Reset Token</label>
+                <input type="text" id="token" name="token" required>
+            </div>
+            <div class="input-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+            </div>
+            <button type="submit">Update Password</button>
+            <p id="resetMessage" class="message"></p>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById("resetForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            let email = document.getElementById("email").value;
+            let messageBox = document.getElementById("message");
+            
+            let response = await fetch("https://script.google.com/macros/s/AKfycbwnEUNK0FEiMWd3wMZWksBPib-RaoO17NiBSxpUR6hAgtdhHzozcLt7pDQsz5-wGbNB5w/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ action: "forgotPassword", email: email })
+            });
+            
+            let result = await response.json();
+            messageBox.textContent = result.message;
+            messageBox.style.color = result.status === "success" ? "green" : "red";
+            
+            if (result.status === "success") {
+                document.getElementById("resetForm").classList.add("hidden");
+                document.getElementById("newPasswordForm").classList.remove("hidden");
+            }
+        });
+
+        document.getElementById("newPasswordForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            let email = document.getElementById("email").value;
+            let token = document.getElementById("token").value;
+            let newPassword = document.getElementById("newPassword").value;
+            let messageBox = document.getElementById("resetMessage");
+            
+            let response = await fetch("https://script.google.com/macros/s/AKfycbwnEUNK0FEiMWd3wMZWksBPib-RaoO17NiBSxpUR6hAgtdhHzozcLt7pDQsz5-wGbNB5w/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ action: "resetPassword", email: email, token: token, newpassword: newPassword })
+            });
+            
+            let result = await response.json();
+            messageBox.textContent = result.message;
+            messageBox.style.color = result.status === "success" ? "green" : "red";
+            
+            if (result.status === "success") {
+                setTimeout(() => { window.location.href = "login.html"; }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>

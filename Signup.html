@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <form id="signupForm" class="form">
+            <h2>Sign Up</h2>
+            <p>Create your account</p>
+            <div class="input-group">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" name="fullname" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Sign Up</button>
+            <p id="message" class="message"></p>
+            <p><a href="AuthForm.html" class="back-link">Already have an account? Login</a></p>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById("signupForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            let fullname = document.getElementById("fullname").value;
+            let email = document.getElementById("email").value;
+            let phone = document.getElementById("phone").value;
+            let password = document.getElementById("password").value;
+            let messageBox = document.getElementById("message");
+            
+            let response = await fetch("https://script.google.com/macros/s/AKfycbwnEUNK0FEiMWd3wMZWksBPib-RaoO17NiBSxpUR6hAgtdhHzozcLt7pDQsz5-wGbNB5w/exec", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ action: "signUp", fullname: fullname, email: email, phone: phone, password: password })
+            });
+            
+            let result = await response.json();
+            messageBox.textContent = result.message;
+            messageBox.style.color = result.status === "success" ? "green" : "red";
+            
+            if (result.status === "success") {
+                setTimeout(() => { window.location.href = "login.html"; }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
