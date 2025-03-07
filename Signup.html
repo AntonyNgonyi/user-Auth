@@ -36,29 +36,49 @@
         </form>
     </div>
     
-    <script>
-        document.getElementById("signupForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            let fullname = document.getElementById("fullname").value;
-            let email = document.getElementById("email").value;
-            let phone = document.getElementById("phone").value;
-            let password = document.getElementById("password").value;
-            let messageBox = document.getElementById("message");
-            
+   <script>
+    document.getElementById("signupForm").addEventListener("submit", async function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Get form values
+        let fullname = document.getElementById("fullname").value;
+        let email = document.getElementById("email").value;
+        let phone = document.getElementById("phone").value;
+        let password = document.getElementById("password").value;
+        let messageBox = document.getElementById("message");
+
+        try {
+            // Send form data to Google Apps Script (GAS)
             let response = await fetch("https://script.google.com/macros/s/AKfycbwnEUNK0FEiMWd3wMZWksBPib-RaoO17NiBSxpUR6hAgtdhHzozcLt7pDQsz5-wGbNB5w/exec", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams({ action: "signUp", fullname: fullname, email: email, phone: phone, password: password })
+                body: new URLSearchParams({
+                    action: "signUp",
+                    fullname: fullname,
+                    email: email,
+                    phone: phone,
+                    password: password
+                })
             });
-            
+
+            // Get JSON response from GAS
             let result = await response.json();
+            
+            // Display the message
             messageBox.textContent = result.message;
             messageBox.style.color = result.status === "success" ? "green" : "red";
             
+            // Redirect to login if signup is successful
             if (result.status === "success") {
                 setTimeout(() => { window.location.href = "login.html"; }, 2000);
             }
-        });
-    </script>
+        } catch (error) {
+            console.error("Error during signup:", error);
+            messageBox.textContent = "Something went wrong. Please try again.";
+            messageBox.style.color = "red";
+        }
+    });
+</script>
+
 </body>
 </html>
